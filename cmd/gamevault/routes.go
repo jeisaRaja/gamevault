@@ -15,5 +15,9 @@ func (app *application) routes() *chi.Mux {
 		})
 	})
 
+	r.MethodNotAllowed(app.methodNotAllowedResponse)
+
+	r.HandleFunc("/*", app.notFoundResponse)
+
 	return r
 }
