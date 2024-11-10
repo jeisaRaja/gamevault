@@ -4,8 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func (app *application) routes() *chi.Mux {
-	r := chi.NewRouter()
+func (app *application) routes(r *chi.Mux) {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/healthcheck", app.healthcheckHandler)
@@ -18,6 +17,4 @@ func (app *application) routes() *chi.Mux {
 	r.MethodNotAllowed(app.methodNotAllowedResponse)
 
 	r.HandleFunc("/*", app.notFoundResponse)
-
-	return r
 }

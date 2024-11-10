@@ -3,11 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	_ "gamevault/docs"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 const version = "1.0.0"
@@ -22,6 +25,15 @@ type application struct {
 	logger *log.Logger
 }
 
+// @title GameVault API
+// @version 1
+// @description sample desc
+
+// @contact.name Jeisa Raja
+// @contact.url https://github.com/jeisaRaja
+
+// @host localhost:8000
+// @BasePath /v1
 func main() {
 	var cfg config
 
@@ -36,9 +48,14 @@ func main() {
 		logger: logger,
 	}
 
+	r := chi.NewRouter()
+	app.routes(r)
+
+	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", cfg.port))))
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      app.routes(),
+		Handler:      r,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
