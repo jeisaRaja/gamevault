@@ -3,14 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	_ "gamevault/docs"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 const version = "1.0.0"
@@ -36,8 +34,12 @@ type application struct {
 // @BasePath /v1
 func main() {
 	var cfg config
+  var defaultPort = 8000
 
-	flag.IntVar(&cfg.port, "port", 8000, "API server port")
+	if portEnv := os.Getenv("APP_PORT"); portEnv != "" {
+		fmt.Sscanf(portEnv, "%d", &defaultPort)
+	}
+	flag.IntVar(&cfg.port, "port", defaultPort, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 	flag.Parse()
 
@@ -51,7 +53,6 @@ func main() {
 	r := chi.NewRouter()
 	app.routes(r)
 
-	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", cfg.port))))
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),

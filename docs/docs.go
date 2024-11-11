@@ -98,7 +98,7 @@ const docTemplate = `{
                 "genres": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Genres"
+                        "$ref": "#/definitions/validator.Genres"
                     }
                 },
                 "id": {
@@ -107,7 +107,7 @@ const docTemplate = `{
                 "platform": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Platform"
+                        "$ref": "#/definitions/validator.Platform"
                     }
                 },
                 "price": {
@@ -127,58 +127,6 @@ const docTemplate = `{
                 }
             }
         },
-        "data.Genres": {
-            "type": "string",
-            "enum": [
-                "action",
-                "adventure",
-                "action-adventure",
-                "puzzle",
-                "role-playing",
-                "simulation",
-                "strategy",
-                "sports",
-                "mmo",
-                "platformer"
-            ],
-            "x-enum-varnames": [
-                "Action",
-                "Adventure",
-                "ActionAdventure",
-                "Puzzle",
-                "RolePlaying",
-                "Simulation",
-                "Strategy",
-                "Sports",
-                "MMO",
-                "Platformer"
-            ]
-        },
-        "data.Platform": {
-            "type": "string",
-            "enum": [
-                "playstation4",
-                "playstation5",
-                "xbox one",
-                "xbox series s",
-                "nintento switch",
-                "steam",
-                "epic",
-                "ios",
-                "android"
-            ],
-            "x-enum-varnames": [
-                "Playstation4",
-                "Playstation5",
-                "XboxOne",
-                "XboxS",
-                "NintentoSwitch",
-                "Steam",
-                "Epic",
-                "IOS",
-                "Android"
-            ]
-        },
         "main.GameCreateRequest": {
             "type": "object",
             "required": [
@@ -196,13 +144,13 @@ const docTemplate = `{
                 "genres": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Genres"
+                        "$ref": "#/definitions/validator.Genres"
                     }
                 },
                 "platform": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Platform"
+                        "$ref": "#/definitions/validator.Platform"
                     }
                 },
                 "price": {
@@ -230,6 +178,58 @@ const docTemplate = `{
                     "$ref": "#/definitions/data.Game"
                 }
             }
+        },
+        "validator.Genres": {
+            "type": "string",
+            "enum": [
+                "action",
+                "adventure",
+                "action-adventure",
+                "puzzle",
+                "role-playing",
+                "simulation",
+                "strategy",
+                "sports",
+                "mmo",
+                "platformer"
+            ],
+            "x-enum-varnames": [
+                "Action",
+                "Adventure",
+                "ActionAdventure",
+                "Puzzle",
+                "RolePlaying",
+                "Simulation",
+                "Strategy",
+                "Sports",
+                "MMO",
+                "Platformer"
+            ]
+        },
+        "validator.Platform": {
+            "type": "string",
+            "enum": [
+                "playstation4",
+                "playstation5",
+                "xbox one",
+                "xbox series s",
+                "nintento switch",
+                "steam",
+                "epic",
+                "ios",
+                "android"
+            ],
+            "x-enum-varnames": [
+                "Playstation4",
+                "Playstation5",
+                "XboxOne",
+                "XboxS",
+                "NintentoSwitch",
+                "Steam",
+                "Epic",
+                "IOS",
+                "Android"
+            ]
         }
     }
 }`
