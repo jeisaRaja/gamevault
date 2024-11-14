@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"gamevault/internal/validator"
 	"time"
@@ -10,17 +11,17 @@ import (
 )
 
 type Game struct {
-	ID          int64      `json:"id"`
-	CreatedAt   time.Time  `json:"-"`
-	Title       string     `json:"title"`
-	Year        int32      `json:"year"`
-	Genres      []Genres   `json:"genres"`
-	Platforms    []Platform `json:"platform"`
-	Developer   string     `json:"developer"`
-	Publisher   string     `json:"publisher"`
-	Rating      float32    `json:"rating"`
-	RatingCount int32      `json:"rating_count"`
-	Price       int64      `json:"price"`
+	ID          int64     `json:"id"`
+	CreatedAt   time.Time `json:"-"`
+	Title       string    `json:"title"`
+	Year        int32     `json:"year"`
+	Genres      []string  `json:"genres"`
+	Platforms   []string  `json:"platform"`
+	Developer   string    `json:"developer"`
+	Publisher   string    `json:"publisher"`
+	Rating      float32   `json:"rating"`
+	RatingCount int32     `json:"rating_count"`
+	Price       int64     `json:"price"`
 }
 
 func ValidateGame(v *validator.Validator, game *Game) {
@@ -63,7 +64,35 @@ func (m GameModel) Insert(game *Game) error {
 }
 
 func (m GameModel) Get(id int64) (*Game, error) {
-	return nil, nil
+	query := `
+    SELECT id, title, year, genres, platform, developer, publisher, price, rating, created_at
+    FROM games
+    WHERE id = $1
+  `
+	var game Game
+
+	err := m.DB.QueryRow(query, id).Scan(
+		&game.ID,
+		&game.Title,
+		&game.Year,
+		pq.Array(&game.Genres),
+		pq.Array(&game.Platforms),
+		&game.Developer,
+		&game.Publisher,
+		&game.Price,
+		&game.Rating,
+		&game.CreatedAt,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &game, nil
 }
 
 func (m GameModel) Update(game *Game) error {

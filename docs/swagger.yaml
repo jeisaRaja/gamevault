@@ -6,13 +6,13 @@ definitions:
         type: string
       genres:
         items:
-          $ref: '#/definitions/validator.Genres'
+          $ref: '#/definitions/data.Genres'
         type: array
       id:
         type: integer
       platform:
         items:
-          $ref: '#/definitions/validator.Platform'
+          $ref: '#/definitions/data.Platform'
         type: array
       price:
         type: integer
@@ -20,22 +20,64 @@ definitions:
         type: string
       rating:
         type: number
+      rating_count:
+        type: integer
       title:
         type: string
       year:
         type: integer
     type: object
+  data.Genres:
+    enum:
+    - action
+    - adventure
+    - action-adventure
+    - puzzle
+    - role-playing
+    - simulation
+    - strategy
+    - sports
+    - mmo
+    - platformer
+    type: string
+    x-enum-varnames:
+    - Action
+    - Adventure
+    - ActionAdventure
+    - Puzzle
+    - RolePlaying
+    - Simulation
+    - Strategy
+    - Sports
+    - MMO
+    - Platformer
+  data.Platform:
+    enum:
+    - playstation
+    - xbox
+    - nintento switch
+    - pc
+    - ios
+    - android
+    type: string
+    x-enum-varnames:
+    - Playstation
+    - Xbox
+    - NintentoSwitch
+    - PC
+    - IOS
+    - Android
   main.GameCreateRequest:
     properties:
       developer:
         type: string
       genres:
         items:
-          $ref: '#/definitions/validator.Genres'
+          $ref: '#/definitions/data.Genres'
         type: array
       platform:
         items:
-          $ref: '#/definitions/validator.Platform'
+          $ref: '#/definitions/data.Platform'
         type: array
       price:
         minimum: 0
@@ -62,52 +104,6 @@ definitions:
       games:
         $ref: '#/definitions/data.Game'
     type: object
-  validator.Genres:
-    enum:
-    - action
-    - adventure
-    - action-adventure
-    - puzzle
-    - role-playing
-    - simulation
-    - strategy
-    - sports
-    - mmo
-    - platformer
-    type: string
-    x-enum-varnames:
-    - Action
-    - Adventure
-    - ActionAdventure
-    - Puzzle
-    - RolePlaying
-    - Simulation
-    - Strategy
-    - Sports
-    - MMO
-    - Platformer
-  validator.Platform:
-    enum:
-    - playstation4
-    - playstation5
-    - xbox one
-    - xbox series s
-    - nintento switch
-    - steam
-    - epic
-    - ios
-    - android
-    type: string
-    x-enum-varnames:
-    - Playstation4
-    - Playstation5
-    - XboxOne
-    - XboxS
-    - NintentoSwitch
-    - Steam
-    - Epic
-    - IOS
-    - Android
 host: localhost:8000
 info:
   contact:

@@ -23,19 +23,19 @@ const (
 	Platformer      Genres = "platformer"
 )
 
-type Platform string
+type Platforms string
 
 const (
-	Playstation    Platform = "playstation"
-	Xbox           Platform = "xbox"
-	NintentoSwitch Platform = "nintento switch"
-	PC             Platform = "pc"
-	IOS            Platform = "ios"
-	Android        Platform = "android"
+	Playstation    Platforms = "playstation"
+	Xbox           Platforms = "xbox"
+	NintentoSwitch Platforms = "nintento switch"
+	PC             Platforms = "pc"
+	IOS            Platforms = "ios"
+	Android        Platforms = "android"
 )
 
-func ValidPlatform(platform Platform) bool {
-	validPlatforms := map[Platform]bool{
+func ValidPlatform(platform Platforms) bool {
+	validPlatforms := map[Platforms]bool{
 		Playstation:    true,
 		Xbox:           true,
 		NintentoSwitch: true,
@@ -46,9 +46,9 @@ func ValidPlatform(platform Platform) bool {
 	return validPlatforms[platform]
 }
 
-func ValidateGamePlatforms(platforms []Platform) bool {
-	for _, v := range platforms {
-		if !ValidPlatform(v) {
+func ValidateGamePlatforms(platforms []string) bool {
+	for _, platform := range platforms {
+		if !ValidPlatform(Platforms(platform)) {
 			return false
 		}
 	}
@@ -73,9 +73,9 @@ func ValidGenre(genre Genres) bool {
 	return validGenres[genre]
 }
 
-func ValidateGameGenres(genres []Genres) bool {
+func ValidateGameGenres(genres []string) bool {
 	for _, genre := range genres {
-		if !ValidGenre(genre) {
+		if !ValidGenre(Genres(genre)) {
 			return false
 		}
 	}

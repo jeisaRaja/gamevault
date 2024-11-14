@@ -1,11 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"gamevault/internal/data"
 	"gamevault/internal/validator"
 	"net/http"
-	"time"
 )
 
 type GameResponse struct {
@@ -13,13 +13,13 @@ type GameResponse struct {
 }
 
 type GameCreateRequest struct {
-	Title     string          `json:"title" validate:"required,min=3,max=100"`
-	Year      int32           `json:"year" validate:"required,gte=1900"`
-	Genres    []data.Genres   `json:"genres" validate:"required,dive,required,max=10"`
-	Platforms  []data.Platform `json:"platform" validate:"dive,required,min:1" `
-	Developer string          `json:"developer" validate:"required"`
-	Publisher string          `json:"publisher" validate:"required"`
-	Price     int64           `json:"price" validate:"gte=0"`
+	Title     string   `json:"title" validate:"required,min=3,max=100"`
+	Year      int32    `json:"year" validate:"required,gte=1900"`
+	Genres    []string `json:"genres" validate:"required,dive,required,max=10"`
+	Platforms []string `json:"platform" validate:"dive,required,min:1" `
+	Developer string   `json:"developer" validate:"required"`
+	Publisher string   `json:"publisher" validate:"required"`
+	Price     int64    `json:"price" validate:"gte=0"`
 }
 
 // @summary Create a new game entry
@@ -83,14 +83,15 @@ func (app *application) showGameHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	game := data.Game{
-		Title:     "Soma",
-		Year:      2021,
-		CreatedAt: time.Now(),
-		Genres:    []data.Genres{data.Action, data.MMO},
-		Developer: "Blitworks",
-		Publisher: "Frictional Games",
-		ID:        game_id,
+	game, err := app.models.Games.Get(game_id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"game": game}, nil)
