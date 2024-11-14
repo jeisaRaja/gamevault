@@ -5,11 +5,13 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"gamevault/internal/data"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+  _ "gamevault/docs"
 	"github.com/go-chi/chi/v5"
 	_ "github.com/lib/pq"
 )
@@ -30,6 +32,7 @@ type config struct {
 type application struct {
 	config config
 	logger *log.Logger
+	models data.Models
 }
 
 // @title GameVault API
@@ -76,6 +79,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModel(db),
 	}
 
 	r := chi.NewRouter()

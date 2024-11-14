@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gamevault/internal/data"
 	"gamevault/internal/validator"
 	"net/http"
@@ -12,13 +13,13 @@ type GameResponse struct {
 }
 
 type GameCreateRequest struct {
-	Title     string               `json:"title" validate:"required,min=3,max=100"`
-	Year      int32                `json:"year" validate:"required,gte=1900"`
-	Genres    []validator.Genres   `json:"genres" validate:"required,dive,required,max=10"`
-	Platform  []validator.Platform `json:"platform" validate:"dive,required,min:1" `
-	Developer string               `json:"developer" validate:"required"`
-	Publisher string               `json:"publisher" validate:"required"`
-	Price     int64                `json:"price" validate:"gte=0"`
+	Title     string          `json:"title" validate:"required,min=3,max=100"`
+	Year      int32           `json:"year" validate:"required,gte=1900"`
+	Genres    []data.Genres   `json:"genres" validate:"required,dive,required,max=10"`
+	Platforms  []data.Platform `json:"platform" validate:"dive,required,min:1" `
+	Developer string          `json:"developer" validate:"required"`
+	Publisher string          `json:"publisher" validate:"required"`
+	Price     int64           `json:"price" validate:"gte=0"`
 }
 
 // @summary Create a new game entry
@@ -37,23 +38,34 @@ func (app *application) createGameHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	game := data.Game{
+	game := &data.Game{
 		Title:     input.Title,
 		Year:      input.Year,
 		Genres:    input.Genres,
-		Platform:  input.Platform,
+		Platforms: input.Platforms,
 		Developer: input.Developer,
 		Publisher: input.Publisher,
 		Price:     input.Price,
 	}
 
 	v := validator.New()
-	if data.ValidateGame(v, &game); !v.Valid(){
-    app.failedValidationResponse(w,r,v.Errors)
-    return
-  }
+	if data.ValidateGame(v, game); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
 
-	app.writeJSON(w, http.StatusOK, envelope{"game": input}, nil)
+	err = app.models.Games.Insert(game)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/v1/movies/%d", game.ID))
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"game": game}, headers)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 // @summary Show details of a specific game
@@ -75,7 +87,7 @@ func (app *application) showGameHandler(w http.ResponseWriter, r *http.Request) 
 		Title:     "Soma",
 		Year:      2021,
 		CreatedAt: time.Now(),
-		Genres:    []validator.Genres{validator.Action, validator.MMO},
+		Genres:    []data.Genres{data.Action, data.MMO},
 		Developer: "Blitworks",
 		Publisher: "Frictional Games",
 		ID:        game_id,

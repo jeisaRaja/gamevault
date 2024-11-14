@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Default values for environment variables
-DEFAULT_PORT=8080
-DEFAULT_DB_HOST=db
-DEFAULT_DB_PORT=5432
+DEFAULT_PORT=8000
+DEFAULT_DB_HOST=gamevault_db
+DEFAULT_DB_PORT=5433
 DEFAULT_DB_USER=postgres
 DEFAULT_DB_PASSWORD=yourpassword
 DEFAULT_DB_NAME=yourdbname

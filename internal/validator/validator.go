@@ -54,32 +54,3 @@ func Unique(values []string) bool {
 
 	return len(values) == len(uniqueValues)
 }
-
-func ValidateGenre(genre Genres) bool {
-	validGenres := map[Genres]bool{
-		Action:          true,
-		Adventure:       true,
-		ActionAdventure: true,
-		Puzzle:          true,
-		RolePlaying:     true,
-		Simulation:      true,
-		Strategy:        true,
-		Sports:          true,
-		MMO:             true,
-		Platformer:      true,
-	}
-
-	if validGenres[genre] {
-		return true
-	}
-	return false
-}
-
-func ValidateGameGenres(genres []Genres) bool {
-	for _, genre := range genres {
-		if !ValidateGenre(genre) {
-			return false
-		}
-	}
-	return true
-}
