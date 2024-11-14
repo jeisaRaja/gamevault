@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS games (
     title TEXT NOT NULL,
     year INTEGER NOT NULL,
     genres TEXT[] NOT NULL,
-    platform TEXT[] NOT NULL,
+    platforms TEXT[] NOT NULL,
     developer TEXT NOT NULL,
     publisher TEXT NOT NULL,
     rating FLOAT NOT NULL DEFAULT 0,

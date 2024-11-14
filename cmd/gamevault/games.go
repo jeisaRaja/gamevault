@@ -28,7 +28,7 @@ type GameCreateRequest struct {
 // @accept json
 // @produce json
 // @param game body GameCreateRequest true "Game details"
-// @success 200 {object} data.Game "Game created successfully"
+// @success 201 {object} data.Game "Game created successfully"
 // @router /games/ [post]
 func (app *application) createGameHandler(w http.ResponseWriter, r *http.Request) {
 	var input GameCreateRequest
@@ -99,4 +99,65 @@ func (app *application) showGameHandler(w http.ResponseWriter, r *http.Request) 
 		app.logger.Println(err)
 		app.serverErrorResponse(w, r, err)
 	}
+}
+
+
+// @summary Update a game entry
+// @description This endpoint allows the user to edit or update a game in the system by providing necessary game details.
+// @tags Game
+// @accept json
+// @produce json
+// @param id path int true "Game ID"
+// @param game body GameCreateRequest true "Game details"
+// @success 200 {object} data.Game "Game Updated"
+// @router /games/{id} [put]
+func (app *application) updateGameHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+    return
+	}
+
+	game, err := app.models.Games.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+
+    return
+	}
+	input := GameCreateRequest{}
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+	}
+
+	game.Title = input.Title
+	game.Year = input.Year
+	game.Genres = input.Genres
+	game.Platforms = input.Platforms
+	game.Developer = input.Developer
+	game.Publisher = input.Publisher
+	game.Price = input.Price
+
+	v := validator.New()
+	if data.ValidateGame(v, game); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = app.models.Games.Update(game)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"game": game}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
 }

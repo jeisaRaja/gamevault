@@ -43,7 +43,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Game created successfully",
                         "schema": {
                             "$ref": "#/definitions/data.Game"
@@ -85,6 +85,45 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "This endpoint allows the user to edit or update a game in the system by providing necessary game details.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Game"
+                ],
+                "summary": "Update a game entry",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Game ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Game details",
+                        "name": "game",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.GameCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Game Updated",
+                        "schema": {
+                            "$ref": "#/definitions/data.Game"
+                        }
+                    }
+                }
             }
         }
     },
@@ -98,7 +137,7 @@ const docTemplate = `{
                 "genres": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Genres"
+                        "type": "string"
                     }
                 },
                 "id": {
@@ -107,7 +146,7 @@ const docTemplate = `{
                 "platform": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Platform"
+                        "type": "string"
                     }
                 },
                 "price": {
@@ -130,52 +169,6 @@ const docTemplate = `{
                 }
             }
         },
-        "data.Genres": {
-            "type": "string",
-            "enum": [
-                "action",
-                "adventure",
-                "action-adventure",
-                "puzzle",
-                "role-playing",
-                "simulation",
-                "strategy",
-                "sports",
-                "mmo",
-                "platformer"
-            ],
-            "x-enum-varnames": [
-                "Action",
-                "Adventure",
-                "ActionAdventure",
-                "Puzzle",
-                "RolePlaying",
-                "Simulation",
-                "Strategy",
-                "Sports",
-                "MMO",
-                "Platformer"
-            ]
-        },
-        "data.Platform": {
-            "type": "string",
-            "enum": [
-                "playstation",
-                "xbox",
-                "nintento switch",
-                "pc",
-                "ios",
-                "android"
-            ],
-            "x-enum-varnames": [
-                "Playstation",
-                "Xbox",
-                "NintentoSwitch",
-                "PC",
-                "IOS",
-                "Android"
-            ]
-        },
         "main.GameCreateRequest": {
             "type": "object",
             "required": [
@@ -193,13 +186,13 @@ const docTemplate = `{
                 "genres": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Genres"
+                        "type": "string"
                     }
                 },
                 "platform": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/data.Platform"
+                        "type": "string"
                     }
                 },
                 "price": {

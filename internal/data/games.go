@@ -54,7 +54,7 @@ type GameModel struct {
 
 func (m GameModel) Insert(game *Game) error {
 	query := `
-    INSERT INTO games (title, year, genres, platform, developer, publisher, price) 
+    INSERT INTO games (title, year, genres, platforms, developer, publisher, price) 
     VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id, created_at
 `
@@ -65,7 +65,7 @@ func (m GameModel) Insert(game *Game) error {
 
 func (m GameModel) Get(id int64) (*Game, error) {
 	query := `
-    SELECT id, title, year, genres, platform, developer, publisher, price, rating, created_at
+    SELECT id, title, year, genres, platforms, developer, publisher, price, rating, created_at
     FROM games
     WHERE id = $1
   `
@@ -96,7 +96,36 @@ func (m GameModel) Get(id int64) (*Game, error) {
 }
 
 func (m GameModel) Update(game *Game) error {
-	return nil
+
+	query := `
+		UPDATE games 
+		SET 
+			title = $1, 
+			year = $2, 
+			genres = $3, 
+			platforms = $4, 
+			developer = $5, 
+			publisher = $6, 
+			rating = $7, 
+			rating_count = $8, 
+			price = $9
+		WHERE id = $10
+		RETURNING id
+	`
+	err := m.DB.QueryRow(query,
+		game.Title,
+		game.Year,
+		pq.Array(game.Genres),
+		pq.Array(game.Platforms),
+		game.Developer,
+		game.Publisher,
+		game.Rating,
+		game.RatingCount,
+		game.Price,
+		game.ID,
+	).Scan(&game.ID)
+
+	return err
 }
 
 func (m GameModel) Delete(id int64) error {

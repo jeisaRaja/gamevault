@@ -8,7 +8,7 @@ ALTER TABLE games
 
 -- Drop the platform length check constraint
 ALTER TABLE games
-    DROP CONSTRAINT IF EXISTS platform_length_check;
+    DROP CONSTRAINT IF EXISTS platforms_length_check;
 
 -- Drop the price check constraint
 ALTER TABLE games

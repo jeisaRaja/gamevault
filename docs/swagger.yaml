@@ -6,13 +6,13 @@ definitions:
         type: string
       genres:
         items:
-          $ref: '#/definitions/data.Genres'
+          type: string
         type: array
       id:
         type: integer
       platform:
         items:
-          $ref: '#/definitions/data.Platform'
+          type: string
         type: array
       price:
         type: integer
@@ -27,57 +27,17 @@ definitions:
       year:
         type: integer
     type: object
-  data.Genres:
-    enum:
-    - action
-    - adventure
-    - action-adventure
-    - puzzle
-    - role-playing
-    - simulation
-    - strategy
-    - sports
-    - mmo
-    - platformer
-    type: string
-    x-enum-varnames:
-    - Action
-    - Adventure
-    - ActionAdventure
-    - Puzzle
-    - RolePlaying
-    - Simulation
-    - Strategy
-    - Sports
-    - MMO
-    - Platformer
-  data.Platform:
-    enum:
-    - playstation
-    - xbox
-    - nintento switch
-    - pc
-    - ios
-    - android
-    type: string
-    x-enum-varnames:
-    - Playstation
-    - Xbox
-    - NintentoSwitch
-    - PC
-    - IOS
-    - Android
   main.GameCreateRequest:
     properties:
       developer:
         type: string
       genres:
         items:
-          $ref: '#/definitions/data.Genres'
+          type: string
         type: array
       platform:
         items:
-          $ref: '#/definitions/data.Platform'
+          type: string
         type: array
       price:
         minimum: 0
@@ -129,7 +89,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Game created successfully
           schema:
             $ref: '#/definitions/data.Game'
@@ -157,6 +117,33 @@ paths:
           schema:
             type: object
       summary: Show details of a specific game
+      tags:
+      - Game
+    put:
+      consumes:
+      - application/json
+      description: This endpoint allows the user to edit or update a game in the system
+        by providing necessary game details.
+      parameters:
+      - description: Game ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Game details
+        in: body
+        name: game
+        required: true
+        schema:
+          $ref: '#/definitions/main.GameCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Game Updated
+          schema:
+            $ref: '#/definitions/data.Game'
+      summary: Update a game entry
       tags:
       - Game
 swagger: "2.0"

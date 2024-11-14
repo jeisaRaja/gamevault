@@ -16,6 +16,7 @@ func (app *application) routes(r *chi.Mux) {
 		r.Route("/games", func(r chi.Router) {
 			r.Post("/", app.createGameHandler)
 			r.Get("/{id}", app.showGameHandler)
+      r.Put("/{id}", app.updateGameHandler)
 		})
 	})
 

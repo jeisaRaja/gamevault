@@ -6,9 +6,9 @@ ALTER TABLE games
 ALTER TABLE games 
     ADD CONSTRAINT genres_length_check CHECK (array_length(genres, 1) BETWEEN 1 AND 10);
 
--- Check that platform array length is between 1 and 10
+-- Check that platforms array length is between 1 and 10
 ALTER TABLE games 
-    ADD CONSTRAINT platform_length_check CHECK (array_length(platform, 1) BETWEEN 1 AND 10);
+    ADD CONSTRAINT platforms_length_check CHECK (array_length(platforms, 1) BETWEEN 1 AND 10);
 
 -- Check that price is non-negative
 ALTER TABLE games 
