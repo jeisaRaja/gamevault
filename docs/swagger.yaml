@@ -6,13 +6,13 @@ definitions:
         type: string
       genres:
         items:
-          type: string
+          $ref: '#/definitions/data.Genres'
         type: array
       id:
         type: integer
       platform:
         items:
-          type: string
+          $ref: '#/definitions/data.Platforms'
         type: array
       price:
         type: integer
@@ -24,20 +24,62 @@ definitions:
         type: integer
       title:
         type: string
+      version:
+        type: integer
       year:
         type: integer
     type: object
+  data.Genres:
+    enum:
+    - action
+    - adventure
+    - action-adventure
+    - puzzle
+    - role-playing
+    - simulation
+    - strategy
+    - sports
+    - mmo
+    - platformer
+    type: string
+    x-enum-varnames:
+    - Action
+    - Adventure
+    - ActionAdventure
+    - Puzzle
+    - RolePlaying
+    - Simulation
+    - Strategy
+    - Sports
+    - MMO
+    - Platformer
+  data.Platforms:
+    enum:
+    - playstation
+    - xbox
+    - nintento switch
+    - pc
+    - ios
+    - android
+    type: string
+    x-enum-varnames:
+    - Playstation
+    - Xbox
+    - NintentoSwitch
+    - PC
+    - IOS
+    - Android
   main.GameCreateRequest:
     properties:
       developer:
         type: string
       genres:
         items:
-          type: string
+          $ref: '#/definitions/data.Genres'
         type: array
       platform:
         items:
-          type: string
+          $ref: '#/definitions/data.Platforms'
         type: array
       price:
         minimum: 0

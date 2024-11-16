@@ -9,5 +9,6 @@ CREATE TABLE IF NOT EXISTS games (
     publisher TEXT NOT NULL,
     rating FLOAT NOT NULL DEFAULT 0,
     rating_count INTEGER NOT NULL DEFAULT 0,
-    price BIGINT NOT NULL DEFAULT 0
+    price BIGINT NOT NULL DEFAULT 0,
+    version INTEGER DEFAULT 0
 );

@@ -22,6 +22,7 @@ type Game struct {
 	Rating      float32   `json:"rating"`
 	RatingCount int32     `json:"rating_count"`
 	Price       int64     `json:"price"`
+	Version     int32     `json:"version"`
 }
 
 func ValidateGame(v *validator.Validator, game *Game) {
@@ -65,7 +66,7 @@ func (m GameModel) Insert(game *Game) error {
 
 func (m GameModel) Get(id int64) (*Game, error) {
 	query := `
-    SELECT id, title, year, genres, platforms, developer, publisher, price, rating, created_at
+    SELECT id, title, year, genres, platforms, developer, publisher, price, rating, created_at, version
     FROM games
     WHERE id = $1
   `
@@ -82,6 +83,7 @@ func (m GameModel) Get(id int64) (*Game, error) {
 		&game.Price,
 		&game.Rating,
 		&game.CreatedAt,
+		&game.Version,
 	)
 	if err != nil {
 		switch {
@@ -96,7 +98,7 @@ func (m GameModel) Get(id int64) (*Game, error) {
 }
 
 func (m GameModel) Update(game *Game) error {
-
+	fmt.Println("game id is: ", game.ID)
 	query := `
 		UPDATE games 
 		SET 
@@ -108,9 +110,10 @@ func (m GameModel) Update(game *Game) error {
 			publisher = $6, 
 			rating = $7, 
 			rating_count = $8, 
-			price = $9
-		WHERE id = $10
-		RETURNING id
+			price = $9,
+      version = version + 1
+		WHERE id = $10 AND version = $11
+		RETURNING version
 	`
 	err := m.DB.QueryRow(query,
 		game.Title,
@@ -123,12 +126,41 @@ func (m GameModel) Update(game *Game) error {
 		game.RatingCount,
 		game.Price,
 		game.ID,
-	).Scan(&game.ID)
+		game.Version,
+	).Scan(&game.Version)
 
-	return err
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+
+	fmt.Printf("%+v\n", game)
+	return nil
 }
 
 func (m GameModel) Delete(id int64) error {
+	if id < 1 {
+		return ErrRecordNotFound
+	}
+
+	query := `DELETE FROM games WHERE id = $1`
+	result, err := m.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
 	return nil
 }
 

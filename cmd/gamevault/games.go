@@ -22,6 +22,16 @@ type GameCreateRequest struct {
 	Price     int64    `json:"price" validate:"gte=0"`
 }
 
+type GameUpadteRequest struct {
+	Title     *string  `json:"title" validate:"required,min=3,max=100"`
+	Year      *int32   `json:"year" validate:"required,gte=1900"`
+	Genres    []string `json:"genres" validate:"required,dive,required,max=10"`
+	Platforms []string `json:"platform" validate:"dive,required,min:1" `
+	Developer *string  `json:"developer" validate:"required"`
+	Publisher *string  `json:"publisher" validate:"required"`
+	Price     *int64   `json:"price" validate:"gte=0"`
+}
+
 // @summary Create a new game entry
 // @description This endpoint allows the user to create a new game in the system by providing necessary game details.
 // @tags Game
@@ -101,7 +111,6 @@ func (app *application) showGameHandler(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-
 // @summary Update a game entry
 // @description This endpoint allows the user to edit or update a game in the system by providing necessary game details.
 // @tags Game
@@ -115,7 +124,7 @@ func (app *application) updateGameHandler(w http.ResponseWriter, r *http.Request
 	id, err := app.readIDParam(r)
 	if err != nil {
 		app.notFoundResponse(w, r)
-    return
+		return
 	}
 
 	game, err := app.models.Games.Get(id)
@@ -127,21 +136,35 @@ func (app *application) updateGameHandler(w http.ResponseWriter, r *http.Request
 			app.serverErrorResponse(w, r, err)
 		}
 
-    return
+		return
 	}
-	input := GameCreateRequest{}
+	input := GameUpadteRequest{}
 	err = app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 	}
 
-	game.Title = input.Title
-	game.Year = input.Year
-	game.Genres = input.Genres
-	game.Platforms = input.Platforms
-	game.Developer = input.Developer
-	game.Publisher = input.Publisher
-	game.Price = input.Price
+	if input.Title != nil {
+		game.Title = *input.Title
+	}
+	if input.Year != nil {
+		game.Year = *input.Year
+	}
+	if input.Developer != nil {
+		game.Developer = *input.Developer
+	}
+	if input.Publisher != nil {
+		game.Publisher = *input.Publisher
+	}
+	if input.Price != nil {
+		game.Price = *input.Price
+	}
+	if input.Genres != nil {
+		game.Genres = input.Genres
+	}
+	if input.Platforms != nil {
+		game.Platforms = input.Platforms
+	}
 
 	v := validator.New()
 	if data.ValidateGame(v, game); !v.Valid() {
@@ -151,7 +174,12 @@ func (app *application) updateGameHandler(w http.ResponseWriter, r *http.Request
 
 	err = app.models.Games.Update(game)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 
@@ -159,5 +187,28 @@ func (app *application) updateGameHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
+}
 
+func (app *application) deleteGameHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	err = app.models.Games.Delete(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "game deleted"}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }

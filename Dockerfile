@@ -12,6 +12,6 @@ COPY . .
 
 RUN go build -o cmd/gamevault/main cmd/gamevault/*.go
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["air", "-c", ".air.toml"]
